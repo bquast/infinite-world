@@ -5,7 +5,7 @@ import path from 'path'
 const dirname = path.resolve()
 
 export default defineConfig({
-    base: '/infinite-world/',
+    base: '/',
     resolve:
     {
         alias:

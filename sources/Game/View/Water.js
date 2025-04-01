@@ -14,24 +14,24 @@ export default class Water
         this.game = Game.getInstance()
         this.scene = this.view.scene
         
-        // Create large water plane with higher resolution for more detailed waves
-        const waterGeometry = new THREE.PlaneGeometry(2000, 2000, 60, 60)
+        // Create large water plane
+        const waterGeometry = new THREE.PlaneGeometry(2000, 2000, 40, 40)
         
-        // Create texture loader
-        const textureLoader = new THREE.TextureLoader()
+        // Load water normal texture
+        const normalTexture = new THREE.TextureLoader().load('/textures/waternormals.jpg')
+        normalTexture.wrapS = normalTexture.wrapT = THREE.RepeatWrapping
         
-        // Create more dramatic water material with the provided texture
+        // Create water material with enhanced wave effects
         this.waterMesh = new ThreeWater(waterGeometry, {
-            color: '#4fa8ff',
-            scale: 8,  // Increased scale for more dramatic waves
+            color: '#4fa8ff',  // Bright blue
+            scale: 4,
             flowDirection: new THREE.Vector2(1, 1),
-            textureWidth: 2048,
-            textureHeight: 2048,
-            reflectivity: 0.9,  // Higher reflectivity
-            distortionScale: 8.0,  // More distortion for choppier waves
-            normalMap0: textureLoader.load('sources/Game/waternormals.jpg'),
-            normalMap1: textureLoader.load('sources/Game/waternormals.jpg'),
-            clipBias: 0.0
+            textureWidth: 1024,
+            textureHeight: 1024,
+            reflectivity: 0.8,
+            clipBias: 0.0,
+            normalMap0: normalTexture,
+            normalMap1: normalTexture
         })
         
         // Position water at sea level (y=0)
@@ -68,12 +68,12 @@ export default class Water
             .step(0.1)
             .name('waterLevel')
             
-        // Enhanced wave controls
+        // Add wave controls
         if (this.waterMesh.material.uniforms.config) {
             folder
                 .add(this.waterMesh.material.uniforms.config.value, 'w')
                 .min(0)
-                .max(20)
+                .max(10)
                 .step(0.1)
                 .name('waveHeight')
                 
@@ -84,22 +84,13 @@ export default class Water
                 .step(0.1)
                 .name('waveSpeed')
         }
-        
-        if (this.waterMesh.material.uniforms.distortionScale) {
-            folder
-                .add(this.waterMesh.material.uniforms.distortionScale, 'value')
-                .min(0)
-                .max(20)
-                .step(0.1)
-                .name('distortionScale')
-        }
     }
 
     update()
     {
-        // Update water animation with faster speed for more visible waves
+        // Update water flow animation with varying speed for more natural waves
         if (this.waterMesh.material.uniforms.time) {
-            this.waterMesh.material.uniforms.time.value += 1.5/60.0
+            this.waterMesh.material.uniforms.time.value += 1.0/60.0
         }
         
         // Follow player position
